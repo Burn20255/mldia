@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shourtcut icon" href="diaicon.jpg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ML Shop with Diamond Diagram Popup and Server ID</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ffa500;
+      text-shadow: 0 0 10px #ff8c00;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Login Section */
+    .login-section {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .login-section p {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #ffb347;
+      text-shadow: 0 0 5px #ffa500;
+    }
+    .login-section button {
+      background: #ff8c00;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      color: #121212;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff8c00;
+      transition: background 0.3s ease;
+    }
+    .login-section button:hover {
+      background: #ffa500;
+    }
+
+    /* Hero menu bar */
+    .hero-menu {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    .hero-menu img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+      object-fit: cover;
+      box-shadow: 0 0 5px #ffa500;
+      margin-top: 30px;
+    }
+    .hero-menu img:hover,
+    .hero-menu img.active {
+      border-color: #ffa500;
+      box-shadow: 0 0 15px #ffa500;
+    }
+
+    /* Diamond select */
+    .diamond-select {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    select {
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background: #222;
+      color: #eee;
+      cursor: pointer;
+      box-shadow: 0 0 5px #ff8c00;
+      transition: background 0.3s ease;
+    }
+    select:hover {
+      background: #333;
+    }
+    /* Server ID input */
+    .server-id-input {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .server-id-input label {
+      font-size: 18px;
+      margin-right: 10px;
+    }
+    .server-id-input input {
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background: #222;
+      color: #eee;
+      width: 200px;
+      box-shadow: 0 0 5px #ff8c00;
+      transition: background 0.3s ease;
+    }
+    .server-id-input input::placeholder {
+      color: #bbb;
+    }
+    .server-id-input input:hover {
+      background: #333;
+    }
+
+    /* Skin card grid */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      justify-items: center;
+    }
+    .item-card {
+      background: #222;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ff8c00;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.3s ease;
+      width: 100%;
+      max-width: 300px;
+    }
+    .item-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #ffa500;
+    }
+    .item-card img {
+      display: block;
+      margin: 20px auto 10px;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      max-height: 300px;
+      object-fit: contain;
+    }
+    .item-card h2 {
+      margin: 10px 0 5px;
+      font-size: 20px;
+      color: #ffb347;
+    }
+    .item-card p {
+      font-weight: bold;
+      color: #0f0;
+      margin: 0 0 10px;
+    }
+    .item-card button {
+      background: #ff8c00;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      box-shadow: 0 0 8px #ff8c00;
+    }
+    .item-card button:hover {
+      background: #ffa500;
+    }
+
+    /* Modal backdrop */
+    .modal {
+      display: none; /* hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    /* Modal content */
+    .modal-content {
+      background-color: #222;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #ffa500;
+      max-width: 400px;
+      text-align: center;
+      color: #ffa500;
+      font-size: 20px;
+      position: relative;
+    }
+    /* Close button */
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      color: #ffa500;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Diamond diagram */
+    .diamond-diagram {
+      margin-top: 15px;
+      font-size: 18px;
+      color: #0f0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="login-section">
+      <p>Connect your mobile legends account to receive rewards</p>
+      <button id="loginBtn">Login</button>
+    </div>
+
+    <h1>Mobile Legends Item & Diamond Shop</h1>
+
+    <div class="hero-menu" id="heroMenu">
+      <img src="https://i.imgur.com/ZEpdSai.png" alt="Chou" data-hero="chou" class="active" title="Chou" />
+      <img src="https://i.imgur.com/mQtbDCB.png" alt="Zilong" data-hero="zilong" title="Zilong" />
+      <img src="https://i.imgur.com/z8CcgKu.png" alt="Hayabusa" data-hero="hayabusa" title="Hayabusa" />
+    </div>
+
+    <div class="diamond-select">
+      <label for="diamondAmount" style="font-size:18px; margin-right:10px;">Select Diamond Quantity:</label>
+      <select id="diamondAmount">
+        <option value="5">5 Diamonds</option>
+        <option value="12">12 Diamonds</option>
+        <option value="26">26 Diamonds</option>
+        <option value="29">29 Diamonds</option>
+      </select>
+    </div>
+
+    <div class="server-id-input">
+      <label for="serverId">Enter Server ID:</label>
+      <input type="text" id="serverId" placeholder="Your Server ID" />
+    </div>
+
+    <div class="items-grid" id="itemsGrid">
+      <!-- Chou skins -->
+      <div class="item-card hero-skin" data-hero="chou">
+        <img src="https://i.imgur.com/ZEpdSai.png" alt="Chou KOF Skin" />
+        <h2>Chou – KOF Skin</h2>
+        <p>Get Free</p>
+        <button onclick="openModal('Chou – KOF Skin')">Claim</button>
+      </div>
+
+      <!-- Zilong skins -->
+      <div class="item-card hero-skin" data-hero="zilong" style="display:none;">
+        <img src="https://i.imgur.com/mQtbDCB.png" alt="Zilong Epic Skin" />
+        <h2>Zilong – Epic Skin</h2>
+        <p>Get Free</p>
+        <button onclick="openModal('Zilong – Epic Skin')">Claim</button>
+      </div>
+
+      <!-- Hayabusa skins -->
+      <div class="item-card hero-skin" data-hero="hayabusa" style="display:none;">
+        <img src="https://i.imgur.com/z8CcgKu.png" alt="Hayabusa Starlight Skin" />
+        <h2>Hayabusa – Starlight Skin</h2>
+        <p>Get Free</p>
+        <button onclick="openModal('Hayabusa – Starlight Skin')">Claim</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="modal-close" id="modalClose">&times;</span>
+      <div id="modalText"></div>
+      <div id="modalServerId"></div>
+      <pre class="diamond-diagram" id="diamondDiagram"></pre>
+    </div>
+  </div>
+
+  <script>
+    const heroMenu = document.getElementById('heroMenu');
+    const itemsGrid = document.getElementById('itemsGrid');
+    const diamondSelect = document.getElementById('diamondAmount');
+    const serverIdInput = document.getElementById('serverId');
+
+    const modal = document.getElementById('modal');
+    const modalText = document.getElementById('modalText');
+    const modalServerId = document.getElementById('modalServerId');
+    const modalClose = document.getElementById('modalClose');
+    const diamondDiagram = document.getElementById('diamondDiagram');
+
+    // Hero menu click handler
+    heroMenu.addEventListener('click', (e) => {
+      if (e.target.tagName === 'IMG') {
+        const selectedHero = e.target.getAttribute('data-hero');
+        // Toggle active image
+        [...heroMenu.children].forEach(img => img.classList.remove('active'));
+        e.target.classList.add('active');
+
+        // Show/hide hero skins
+        const skins = itemsGrid.querySelectorAll('.hero-skin');
+        skins.forEach(skin => {
+          skin.style.display = skin.getAttribute('data-hero') === selectedHero ? 'block' : 'none';
+        });
+      }
+    });
+
+    // Open modal function
+    function openModal(skinName) {
+      const serverId = serverIdInput.value.trim();
+      if (!serverId) {
+        alert('Please enter your Server ID first.');
+        return;
+      }
+      modalText.textContent = `You are claiming: ${skinName}`;
+      modalServerId.textContent = `Server ID: ${serverId}`;
+      const diamonds = parseInt(diamondSelect.value, 10);
+      diamondDiagram.textContent = getDiamondDiagram(diamonds);
+      modal.style.display = 'flex';
+    }
+
+    // Close modal handler
+    modalClose.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    // Close modal on outside click
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    // Diamond diagram generator
+    function getDiamondDiagram(num) {
+      if (num === 5) {
+        return `
+  *  
+ * * 
+*   *
+ * * 
+  *  
+        `.trim();
+      } else if (num === 12) {
+        return `
+    *    
+   * *   
+  *   *  
+ *     * 
+*       *
+ *     * 
+  *   *  
+   * *   
+    *    
+        `.trim();
+      } else if (num === 26) {
+        return `
+      *      
+     * *     
+    *   *    
+   *     *   
+  *       *  
+ *         * 
+*           *
+ *         * 
+  *       *  
+   *     *   
+    *   *    
+     * *     
+      *      
+        `.trim();
+      } else if (num === 29) {
+        return `
+       *       
+      * *      
+     *   *     
+    *     *    
+   *       *   
+  *         *  
+ *           * 
+*             *
+ *           * 
+  *         *  
+   *       *   
+    *     *    
+     *   *     
+      * *      
+       *       
+        `.trim();
+      } else {
+        return 'No diagram available';
+      }
+    }
+
+    // Login button (navigate to login.html)
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.addEventListener('click', () => {
+      window.location.href = 'login.html';
+    });
+  </script>
+
+</body>
+</html>
